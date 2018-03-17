@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" ng-app="flaskSPA">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Project</title>
+    <link rel="stylesheet" href="lib/bootcards/dist/css/bootcards-desktop.css">
+    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/jquery-ui/themes/smoothness/jquery-ui.css"/>   
+    <link rel="stylesheet" href="pages/mainPage/css/app.css">
+</head>
+
+<body keycatcher ng-controller="SiteArbiter">
+    <div pageslide ps-open="navigator" ps-side="left" ps-zindex="100000">
+        <div class="basicSlider" style="padding:30px">
+            <h5 class="text-center">Navigation</h5>
+            <ul class="nav nav-pills">
+                <a class="list-group-item" href="#/"> Home Page <span class="fa fa-home pull-right" aria-hidden="true"></span></a>
+        </div>
+    </div>
+
+    <div pageslide ps-open="settings" ps-zindex="100000" ps-size="400px">
+        <div class="basicSlider" style="padding:30px">
+            <h5 class="text-center"> Settings </h5>
+            <div class="container col-xs-16">
+                <p>Put anything here</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="header" class="text-center" ng-hide=" location != '/' ">
+        <div class="col-xs-10 col-centered">
+            <h1> Flask-Angular-Bootstrap with Cards </h1>
+            <h4> Basic homepage. Nav and Settings embedded in pageslides.</h4>
+        </div>
+    </div>
+    <button class="btn btn-inversePrimary round" ng-click="navigator = !navigator" style="position:absolute;top:5px;left:5px;margin:0;padding:5px 3px; min-width: 80px;"> Nav <span class="fa fa-arrow-right"></span></button>
+    <button class="btn btn-inversePrimary round" ng-click="settings = !settings" style="position:absolute;top:5px;right:5px;margin:0;padding:5px 3px; min-width: 80px;"> <span class="fa fa-arrow-left"></span> Settings </button>
+    
+    <div class="container col-lg-16" ng-view>
+        <!-- this is where all the template are injected depending on input -->
+    </div>
+
+    <footer class="footer navbar-fixed-bottom" ng-hide=" location != '/' ">
+        <div class="container text-center">
+            <p> Press 'Option-[' or 'Option-]' to reveal side-panels. </p>
+            <p> Made with <span class="fa fa-heart"></span> - Quarke</p>
+        </div>
+    </footer>
+
+    <scripts>
+        <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
+        <script type="text/javascript" src="lib/jquery-ui/jquery-ui.js"></script>
+        <script type="text/javascript" src="lib/lodash/dist/lodash.js"></script>
+        <script type="text/javascript" src="lib/angular/angular.js"></script>
+        <script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>
+        <script type="text/javascript" src="lib/angular-route/angular-route.js"></script>
+        <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+        <script type="text/javascript" src="lib/angular-ui-date/dist/date.js"></script>
+        <script type="text/javascript" src="lib/angular-pageslide-directive/dist/angular-pageslide-directive.min.js"></script>
+        <script type="text/javascript" src="lib/angular-animate/angular-animate.js"></script>
+        <script type="text/javascript" src="lib/bootcards/dist/js/bootcards.min.js"></script>
+
+        <script type="text/javascript" src="pages/mainPage/js/app.js"></script>
+    </scripts>
+</body>
+</html>
