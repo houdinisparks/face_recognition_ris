@@ -1,6 +1,10 @@
-from app import app
-from flask import Flask, render_template, request, url_for, send_from_directory
+from flask import Blueprint
 
-@app.route('/')
+
+webpage_bp = Blueprint('webpage', __name__,static_folder="../static")
+
+
+@webpage_bp.route('/')
 def root():
-    return app.send_static_file('pages/mainPage/views/index.html')
+    print("sending index.html")
+    return webpage_bp.send_static_file('Spages/mainPage/views/index.html')
