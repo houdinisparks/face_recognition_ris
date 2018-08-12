@@ -4,6 +4,9 @@
         "profile_name": "work",
         "project_name": "cognizant-faceprocessor",
         "runtime": "python3.6",
-        "s3_bucket": "s3lamdasources"
+        "s3_bucket": "s3lamdasources",
+        "exclude":[
+            "images"
+        ]
     }
 }

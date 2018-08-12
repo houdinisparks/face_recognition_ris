@@ -1,5 +1,4 @@
 from flask import Flask
-
 from app import routes
 
 
@@ -12,6 +11,7 @@ def create_app():
     # register_extensions(app)
     register_blueprints(app)
     return app
+
 
 
 def register_blueprints(app):
