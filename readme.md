@@ -21,7 +21,21 @@ This api can be implemented over the various use cases:
 - Microsoft Face Api Key
 - Microsoft Azure Table Storage Key
 
-<still in dev>
+### 1) Create an external environment config file
+Create a file config.ini and save it to folder regident/config/config.ini.
+Fill it with the contents below.
+```
+[DEFAULT]
+FACEAPI_KEY = 
+FACEAPI_BASEURL = https://<region>.api.cognitive.microsoft.com/face/v1.0
+FACEAPI_REGION = 
+AZURESTORAGE_KEY = 
+AZURESTORAGE_CONNECTIONSTRING = 
+AZURESTORAGE_ACCTNAME = 
+AZURESTORAGE_TABLENAME = 
+```
+
+*still in development...*
 
 ## How to use the api
 <still in dev>

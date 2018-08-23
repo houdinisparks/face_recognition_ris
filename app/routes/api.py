@@ -37,7 +37,7 @@ class Person(Resource):
             else:
                 return Response(response=str(e), status=400)
 
-        return resp
+        return resp.items
 
     def post(self):
         """

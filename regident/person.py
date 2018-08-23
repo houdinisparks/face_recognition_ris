@@ -55,6 +55,12 @@ class Person:
             for image in images:
                 CF.person.add_face(image, persongroupid, person_id)
 
+            # update the person group data to update the person_count
+            resp = CF.person_group.get(persongroupid)
+            persongroup_userdata = json.loads(resp["userData"])
+            persongroup_userdata["person_count"] += 1
+            CF.person_group.update(persongroupid, user_data=json.dumps(persongroup_userdata))
+
             # train person in person group
             CF.person_group.train(persongroupid)
 
@@ -98,8 +104,8 @@ class Person:
     def delete_person(cls, id, persongroupid=None):
         try:
 
-            # get personid based on id
             if persongroupid == None:
+                # delete person from all person groups
                 entities = cls.get_person_info(id)
 
             else:
@@ -112,10 +118,8 @@ class Person:
                 query = "PartitionKey eq '{0}' and RowKey eq '{1}'".format(persongroupid, id)
                 entities = cls.table_service.query_entities(config.AZURESTORAGE_TABLENAME,
                                                             filter=query)
-                entities = entities.items
-
             # personid = entities.items[0]["PersonId"]
-            for item in entities:
+            for item in entities.items:
                 persongroupid = item["PartitionKey"]
                 personid = item["PersonId"]
                 cls.table_service.delete_entity(table_name=config.AZURESTORAGE_TABLENAME,
@@ -125,7 +129,13 @@ class Person:
                     # delete from face api and azure storage
                     CF.person.delete(persongroupid, personid)
 
-                    # retrain person in person group
+                    # update the person group data to update the person_count
+                    resp = CF.person_group.get(persongroupid)
+                    persongroup_userdata = json.loads(resp["userData"])
+                    persongroup_userdata["person_count"] -= 1
+                    CF.person_group.update(persongroupid, user_data=json.dumps(persongroup_userdata))
+
+                    # retrain person group
                     CF.person_group.train(persongroupid)
 
                 except CognitiveFaceException as e:
@@ -195,11 +205,17 @@ class Person:
 
     @classmethod
     def get_person_info(cls, id):
-        # this method right now is very inefficient as it requires a full table scan.
+        """
+        Retrieves all the person's info includin the personid tagged with Azure Face Api,
+        all the persongroups they are in.
+
+        :param id:
+        :return: all the personids based on the unique id
+        """
 
         query = "RowKey eq '{0}'".format(id)
         entities = cls.table_service.query_entities(table_name=config.AZURESTORAGE_TABLENAME,
                                                     filter=query,
                                                     select="PartitionKey,RowKey,PersonId,"
                                                            "PersonName,PersonData")
-        return entities.items
+        return entities

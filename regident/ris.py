@@ -1,8 +1,10 @@
+import traceback
 from itertools import chain
 import cognitive_face as CF
 import logging
 
 from azure.storage.table import TableService
+from cognitive_face import CognitiveFaceException
 
 from regident.config.config import app_config
 
@@ -21,7 +23,7 @@ API METHODS
 """
 
 
-# Registraion and Identification System (RIS)
+# Registration and Identification System (RIS)
 class RIS(Person, PersonGroup):
 
     @staticmethod
@@ -31,9 +33,11 @@ class RIS(Person, PersonGroup):
         If the face is not found in any person groups, then "identified_in_persongroups" key
         will return an empty list.
 
+        :param image:
+        :param threshold:
         :param max_candidates_return:
-        :param image: A URL or a file path or a file-like object represents an image.
-        :return: An json dict of with persongroupid as key, and name and id as value.
+        :param persongroups: if None, it will check through all persongroups.
+        :return:
         """
 
         response = {}
@@ -51,7 +55,7 @@ class RIS(Person, PersonGroup):
         # identify face person groups. if persongroups=None, then it will check against all persongroups
         if persongroups is None:
             persongroups = CF.person_group.lists()
-            persongroups = [persongroup["personGroupId"] for persongroup in persongroups]  # [f['name'] for f in fields]
+            persongroups = [persongroup["personGroupId"]  for persongroup in persongroups]  # [f['name'] for f in fields]
         else:
             persongroups = persongroups.split(",")
 
@@ -59,21 +63,30 @@ class RIS(Person, PersonGroup):
         # identified = False
         for persongroupid in persongroups:
 
-            identify_results = CF.face.identify(faceids, person_group_id=persongroupid,
-                                                max_candidates_return=max_candidates_return, threshold=threshold)
+            try:
+                identify_results = CF.face.identify(faceids, person_group_id=persongroupid,
+                                                    max_candidates_return=max_candidates_return, threshold=threshold)
+            except CognitiveFaceException as e:
+                if e.code == "PersonGroupNotTrained":
+                    response[persongroupid] = "Person group is either not trained, or is empty."
+                else:
+                    response[persongroupid] = e.code
+
+                logger.error(traceback.format_exc())
+                continue
+
             personids = []
             for result in identify_results:
                 candidates = result["candidates"]
                 if not candidates:
                     continue
-                    # faceids_similaritycheck.append(result["faceId"])
 
                 else:
                     # personids = [x["personId"] for x in candidates]
                     personids.append([x["personId"] for x in
                                       candidates])  # [{'personId': '72db5f04-4380-47cd-9091-8ba76495f0a5', 'confidence': 1.0}]
                     # remove identified faceids from list
-                    faceids.remove(result["faceId"])
+                    # faceids.remove(result["faceId"])
 
             # flattens 2d to 1d list
             personids = list(chain.from_iterable(
@@ -95,10 +108,14 @@ class RIS(Person, PersonGroup):
                 response[persongroupid].append(jsonperson)
 
             # if faceids is empty / no more face ids to identify then breaks
-            if not faceids:
-                break
+            # if not faceids:
+            #     break
 
-        # # DONE! For those faceids in the unregistered list, put it into the faceList.
+        return response
+
+# """
+# JUNK
+  # # DONE! For those faceids in the unregistered list, put it into the faceList.
         #
         # facelists = CF.face_list.lists()
         # for facelist in facelists:
@@ -120,8 +137,6 @@ class RIS(Person, PersonGroup):
         #
         #     response["identified_in_facelists"] = list(chain.from_iterable(
         #         response["identified_in_facelists"]))
-
-        return response
 
 
 # """

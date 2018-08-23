@@ -1,4 +1,7 @@
 
+images/
+regident/config/config.ini
+
 # Created by https://www.gitignore.io/api/bower,python,pycharm,virtualenv
 
 ### Bower ###
